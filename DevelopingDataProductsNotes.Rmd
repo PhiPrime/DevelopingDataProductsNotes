@@ -32,11 +32,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # Shiny, GoogleVis, and Plotly  
 ## Shiny Part 1  
 
-
-### Shiny Overview 
-
-
-
 ### Shiny Overview (1.1)  
 #### What is Shiny?  
 * Shiny is a web development framework in R, meaning one only needs to know R to use it.  
@@ -125,22 +120,54 @@ A demo is located in `./helloShiny`
 
 ## Shiny Part 2  
 
-### Shiny (2.1)  
+### Reactivity (2.1)  
+* A reactive expression manipulates inputs from Shiny and returns a value.  
+* Reactivity provides a way for your app to respond, as inputs will change depending on how users interact with your UI  
+* Expressions that are subject to change should be wrapped with the function `reactive()`  
+  + Because of the syntax of Shiny this may look a bit "unorthodox" for R code (Having `({...})`)  
+* Creating a reactive expression is like creating a function:  
+```{r eval = FALSE}
+calc_sum <- reactive({
+  input$box1 + input$box2
+})
+
+# ...
+
+calc_sum()
+```
+
+* Later we'll look at having the user push a button to have the app react, which is helpful for more computational heavy computations.  
+
+### `reactive` Example (2.2)  
+* An example that uses the `reactive` function can be found in `./helloReactive/`  
 
 
-### Shiny (2.2)  
+### Delayed Reactivity (2.3)  
+* One may not want an app to immediately react to changes in user input, such as in cases of long-running calculation
+* In order to prevent reactive expressions from reacting one can include a submit button in the app.  
+* An example of this can be found in `./helloSubmit/`, which is a "fork" of `./helloReactive/` but with the submit button (only comments about the submit button are present in this document).    
 
+### Tabs (2.4)  
+* There are several other kinds of UI components that one can add to an app, such as tabs  
+  + tabs - gives app multiple views  
+  + navbars - to click around multiple tabs, like a top menu  
+  + sidebars - just like navbars but on the side  
+  
+* There are functions for managing these tabs:  
+  + `tabsetPanel()` - specifies a group of tabs  
+  + `tabPanel()` - specifies the contents of an individual tab  
 
-### Shiny (2.3)  
+* An example of tabs can be found in `./helloTabs/`    
 
+### Using your own HTML (2.5)  
+* To use custom HTML one would save the code as `index.html` in a directory, named `www`, which is a child of the directory containing the `server.R` file  
+* Most of the style from Shiny's bootstrap setup in the header will no longer be needed
 
-### Shiny (2.4)  
+### Interactive Graphics (2.6)  
+* A feature of Shiny is the ability to create graphics that a user can interact with.  
+* One method that can be used to select multiple data points on a graph is by specifying the `brush` parameter in `plotOutput()` in the `ui.R` file, then using the `brushedPoints()` function in the `server.R` file.  
+* The `./helloBrush/` directory gives an example that draws a line of best fit, given user selected points.  
 
-
-### Shiny (2.5)  
-
-
-### Shiny (2.6)  
 
 
 **Reminder to Commit (02), Delete this line** ***AFTER*** **Committing**  
