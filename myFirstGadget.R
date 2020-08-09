@@ -17,4 +17,5 @@ myFirstGadget <- function() {
     runGadget(ui,server)
 }
 
+#Run the Gadget
 myFirstGadget()

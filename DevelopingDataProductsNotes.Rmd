@@ -267,14 +267,81 @@ pickTrees <- function() {
 
 * The original data frame row numbers are retained, as such this can be helpful to quickly identify outliers in one's data
 
-**Reminder to Commit (03), Delete this line** ***AFTER*** **Committing**  
 
 ## GoogleVis  
 ### GoogleVis (1.1)  
+* `googleVis` is a package that connects R to Google's visualization API  
+* Allows one to create visuals that would otherwise be difficult to create without it.  
+* googleVis charts can be embedded into the HTML when using Knitter too  
+* Btw googleVis uses flash, so unless they change something this will be obsolete after browsers stop supporting flash entirely.  
+  + Maybe check out the suggested packages in the answer to **[this StackOverflow question.](https://stackoverflow.com/questions/17786043/alternative-for-googlevis-in-r)**  
+
+#### Motion Chart Example  
+```{r message = FALSE}
+library(googleVis)
+M <- gvisMotionChart(Fruits, #Example data included with GVis
+                     idvar = "Fruit", timevar = "Year")
+
+#To view the chart in a web browser with flash from Command line use
+# plot(M)
+# print(M, "chart") #prints HTML to run flash
+```
 
 
-### GoogleVis(1.2)  
+### Charts in googleVis (1.2)  
+* Motion charts: `gvisMotionChart`  
+* Interactive maps: `gvisGeoChart`  
+* Interactive tables: `gvisTable`  
+* Line charts: `gvisLineChart`  
+* Bar charts: `gvisColumnChart`  
+* Tree maps: `gvisTreeMap`  
+* **[The full documentation can be fround on CRAN](http://cran.r-project.org/web/packages/googleVis/googleVis.pdf)**  
 
+#### Plots on Maps Example  
+```{r}
+G <- gvisGeoChart(Exports, 
+                  locationvar = "Country", colorvar = "Profit")
+# plot(G) #Commented out because... flash
+```
+* **[Options that can be used with googleVis can be found here](https://developers.google.com/chart/interactive/docs/gallery/geochart)** (**[Archived here, just in case](https://web.archive.org/web/20200416200251if_/https://developers.google.com/chart/interactive/docs/gallery/geochart)**)  
+
+#### Combing Multiple Plots Together  
+```{r}
+G <- gvisGeoChart(Exports, "Country", "Profit")
+T1 <- gvisTable(Exports)
+M <- gvisMotionChart(Fruits, "Fruit", "Year")
+GT <- gvisMerge(G, T1, horizontal = FALSE) #Vertical combo (like cbind)
+GTM <- gvisMerge(GT, M, horizontal = TRUE, #Horizontal combo
+                 tableOptions = "bgcolor=\"#CCCCCC\" cellspacing=10")
+#plot(GTM)
+```
+
+#### Viewing the HTML code  
+```{r eval = FALSE, echo = TRUE}
+M <- gvisMotionChart(Fruits, "Fruit", "Year")
+
+#View locally (setting results = "asis" in Rmd would 
+# make the HTML code paste right in)
+print(M)
+
+# Save HTML to a file  
+print(M, 'chart', file = "myfilename.html")
+```
+
+#### Things You Can do with Google Vis  
+* The visualizations can be embedded in websites with HTML code  
+* Dynamic visualizations can be built with `Shiny`, `Rook`, and `R.rsp`  
+* Embed them in R markdown based documents  
+  + Set `results="asis"` in the chunk options  
+  * Can be used with `kniter` and `slidify`  
+  + Sometimes clearing `kniter` cache can help the (static) charts display  
+  
+#### For More Info  
+* `demo(googleVis)` will show off some plots... using flash when needed  
+* **[CRAN vignette](http://cran.r-project.org/web/packages/googleVis/vignettes/googleVis.pdf)**  
+* **[CRAN package info](http://cran.r-project.org/web/packages/googleVis/googleVis.pdf)**  
+* **[Google's documentation](https://developers.google.com/chart/interactive/docs/gallery)**  
+* **[Google's FAQ](https://developers.google.com/chart/interactive/faq)**  
 
 **Reminder to Commit (04), Delete this line** ***AFTER*** **Committing**  
 
