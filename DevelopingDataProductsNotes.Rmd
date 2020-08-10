@@ -343,32 +343,169 @@ print(M, 'chart', file = "myfilename.html")
 * **[Google's documentation](https://developers.google.com/chart/interactive/docs/gallery)**  
 * **[Google's FAQ](https://developers.google.com/chart/interactive/faq)**  
 
-**Reminder to Commit (04), Delete this line** ***AFTER*** **Committing**  
-
 ## Plotly  
-### Plotly (1.1)  
+### Plotly Intro (1.1)  
+* `Plotly` is helpful for creating interactive web graphics with R  
+* Can integrate with a lot of other languages too, such as: R, Python, MatLab, JavaScript, and Microsoft Excel.   
+* To share visualizations online one will need an account on **[the plotly site](https://plotly.com/)**  
+* However the `plotly` package will let one just make HTML graphics independent of the plotly site
+* Outputs from `knitr` that warrant for interaction will allow interaction with `plotly` plots 
 
 
-### Plotly (1.2)  
+### Basic Scatter Plot (1.2)  
+* A scatter plot is indicated with the parameter `mode = "markers"`  
+```{r message = FALSE}
+library(plotly)
+plot_ly(data = mtcars, x = ~wt, y = ~mpg, # '~' is needed to refer to vars
+        mode = "markers") # Designates a scatter plot
+```
 
 
-### Plotly (1.3)  
+
+### Adding Qualatative Variables (1.3)  
+#### Discreet Color  
+```{r message=FALSE}
+plot_ly(mtcars, x = ~wt, y = ~mpg, mode = "markers",
+        color = ~as.factor(cyl))#Color by cylinder type
+```
+
+#### Continuous Color  
+```{r message=FALSE}
+plot_ly(mtcars, x = ~wt, y = ~mpg, mode = "markers",
+        color = ~disp)#Color by displacement, a continuous varaible
+```
+  
+#### Altering Size  
+```{r message=FALSE}
+plot_ly(mtcars, x = ~wt, y = ~mpg, mode = "markers",
+        color = ~as.factor(cyl), size = ~hp)
+```
+
+#### 3D Scatter Plot  
+* A three-dimensional scatterplot can be created with the `type = "scatter3d"` argument.  
+  + These plots can be clicked and dragged to view different angles  
+* Uses WebGL to create interactive 3D graphics in a web page
+```{r message = FALSE}
+set.seed(1618033)
+temp <- rnorm(100, mean = 30, sd = 5)
+pressure <- rnorm(100)
+dtime <- 1:100
+
+plot_ly(x = temp, y = pressure, z = dtime,
+        type = "scatter3d", #For 3D plot
+        mode = "markers", #Plot type still needs to be denoted
+        color = temp) #Qualities can still be applied
+```
 
 
-### Plotly (1.4)  
+### Line Graphs (1.4)  
+#### Standard Line Graph Example  
+* Default for `plot_ly` is to make a scatter plot, so the argument `mode = "line"` has to be passed.  
+```{r message = FALSE}
+data("airmiles")
+head(cbind(time(airmiles), airmiles))
+plot_ly(x = time(airmiles), y = airmiles, mode = "line")
+```
+
+#### Multi Line Graph - Stock Example  
+* Multiple lines can be shown by specifying the column in the data frame that separates the lines  
+```{r message = FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+library(reshape2)
+data("EuStockMarkets")
+
+stocks <- as.data.frame(EuStockMarkets) %>%
+  melt(value.name = "price") %>%
+  mutate(index = variable,
+         time = rep(time(EuStockMarkets), 4))
+head(stocks)
+plot_ly(stocks, x = ~time, y = ~price, color = ~index, mode = "line")
+```
 
 
-### Plotly (1.5)  
+### Other Plots (1.5)  
+#### Histogram  
+* Use the `type = "histogram"` argument  
+```{r message = FALSE}
+plot_ly(x = ~precip, type = "histogram")
+```
+
+#### Boxplot  
+* Use the `type = "box"` argument  
+```{r message = FALSE}
+plot_ly(iris, y = ~Petal.Length, color = ~Species, type = "box")
+```
+
+#### Heatmap  
+* Use the `type = "heatmap"` argument  
+```{r}
+set.seed(1618033)
+terrain1 <- matrix(rnorm(100*100), nrow = 100, ncol = 100)
+plot_ly(z = terrain1, type = "heatmap")
+```
+
+#### 3D Surface  
+* Create move-able 3D surfaces with `type = "surface"`  
+```{r message = FALSE}
+set.seed(1618)
+terrain2 <- matrix(sort(rnorm(100*100)), nrow = 100, ncol = 100)
+plot_ly(z = terrain2, type = "surface")
+```
 
 
-### Plotly (1.6)  
+### Choropleth Maps (1.6)  
+* Geographical maps with regions colored by a variable  
+```{r message = FALSE}
+# Create data frame
+state_pop <- data.frame(State = state.abb, Pop = as.vector(state.x77[,1]))
+#Create hover text
+state_pop$hover <- with(state_pop, paste(State, "<br>", "Population:", Pop))
+head(state_pop)
+
+#Make state borders red
+borders <- list(color = toRGB("#FF0000"))
+
+#Set up some mapping options  
+map_options <- list(
+  scope = "USA",
+  projection = list(type = "albers usa"),
+  showlakes = TRUE,
+  lakecolor = toRGB("#FFFFFF")
+)
+
+#Create plot 
+plot_ly(state_pop, z = ~Pop, text = ~hover, #text displayed when hovered over
+        locations = ~State,
+        type = "choropleth",
+        locationmode = "USA-states",
+        color = ~Pop, colors = "Blues", marker = list(line = borders)) %>%
+  layout(title = "US Population in 1975", geo = map_options)
+```
 
 
-### Plotly (1.7)  
+### Displaying ggplots with Plotly (1.7)  
+```{r message = FALSE}
+set.seed(100)
+d <- diamonds[sample(nrow(diamonds), 1000), ]
+p <- ggplot(data = d, aes(x = carat, y = price)) +
+  geom_point(aes(text = paste("Clarity:", clarity)), size = 4) +
+  geom_smooth(aes(colour = cut, fill = cut)) + facet_wrap(~ cut)
+
+(gg <- ggplotly(p))
+```
 
 
-### Plotly (1.8)  
+### Posting to Plotly (1.8)  
+* With a saved plotly plot, `gg` in this case, one wants to execute `plotly_POST(gg)`, however you have to have an authentication API established:
+```{r eval = FALSE, echo = TRUE}
+Sys.setenv("plotly_username" = "your_plotly_username")
+Sys.setenv("plotly_api_key" = "your_api_key")
+```
+  + One can save these commands in their `.Rprofile` file to run everytime R is started  
 
+* Extra note: For kniting PDFs one can see **[this StackOverflow post for instructions](https://stackoverflow.com/questions/40268152/plotly-as-png-in-knitr-rmarkdown)**  
 
 **Reminder to Commit (05), Delete this line** ***AFTER*** **Committing**  
 
