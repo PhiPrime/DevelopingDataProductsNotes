@@ -115,9 +115,6 @@ A demo is located in `./helloShiny`
   + checkboxes for a logical if labels are present  
   
 
-
-**Reminder to Commit (01), Delete this line** ***AFTER*** **Committing**  
-
 ## Shiny Part 2  
 
 ### Reactivity (2.1)  
@@ -609,33 +606,44 @@ pickXY(my_data)
 
 
 
-**Reminder to Commit (Q1), Delete this line** ***AFTER*** **Committing**  
-
-
 # R Markdown and Leaflet  
 ## R Markdown  
+* Personal note: I've taken notes on R Markdown in a previous course and have linked back to it whenever the topic came up, however having it in a PDF format may be nice for later so I'll be repeating some material previously covered in past courses.  
+
+### Overview (1.1)  
+* R Markdown is built into RStudio and allows one to create documents (like HTML, PDF, and Word) from R.  
+* R Markdown allows one to embed R code & plots into documents.  
+* It allows work in R to be in more accessible formats for the laymen  
+* R Markdown documents are reproducible - the source code gets ran every time a doc. is generated, so if data change or source code changes, the output will reflect these changes.  
+  + Reproducablity helps increase credibility for a given report (making sure results aren't fake).
+* Helpful for generating routine reports, especially ones based on a particular set of data  
 
 
-### R Markdown (1.1)  
+### Set Up - Presentaion (1.2)  
+* Create a new R Markdown file in RStudio by selecting `File > New File > R Markdown...`  
+* Select "presentation" tab  
+* Enter a title, author, and select what kind of output you want (these options can be changed later)  
+* An example of the default template's, `ioslides_presentation`, R Markdown and HTML output can be found in `./helloPresentation/`.  
 
+### Editing a Presentaion (1.3 - 1.5)  
+Example & output is in `./editingPresentaions`  
 
-### R Markdown (1.2)  
-
-
-### R Markdown (1.3)  
-
-
-### R Markdown (1.4)  
-
-
-### R Markdown (1.5)  
-
-
-### R Markdown (1.6)  
-
+### Publishing to Github Pages (1.6)  
+* A guide to making github pages **[can be found here.](https://github.com/lgreski/datasciencectacontent/blob/master/markdown/pml-ghPagesSetup.md)**  
+If one has the github link of: *https://github.com/seankross/slides/blob/gh-pages/Developing_Data_Products/R_Markdown/R_Markdown.html*  
+* Where:  
+  + *seankross* is the user  
+  + *slides* is the repo  
+* The github pages can be found by going to *<user>.github.io/<repo>/<file_Loc>*  
+  + In this example that would be *https://seankross.github.io/slides/Developing_Data_Products/R_Markdown/R_Markdown.html*  
+  + Note that "*blob/gh-pages*" is removed as this is internal info for GitHub's main site that a gh-pages exists  
 
 ### Sharing R Markdown Documents  
-
+* R Markdown documents can be shared with:  
+  + **[GitHub Pages](https://pages.github.com/)**  
+  + **[RPubs](https://rpubs.com/)**  
+    - **[RPubs Instructions](https://rpubs.com/about/getting-started)**  
+  + **[NeoCities](https://neocities.org/)** - for hosting HTML files for free  
 
 **Reminder to Commit (06), Delete this line** ***AFTER*** **Committing**  
 

@@ -1,0 +1,76 @@
+---
+title: "Editting Presentations"
+author: "PhiPrime"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## New Slide  
+A new slide is denoted with a second level header, that is a new line in the `.Rmd` document starting with ##  
+
+***
+A slide without a title can be created by having a line with three asterisks, ***  
+
+## Headings  
+### A top level heading has three #s  
+#### Then a subheading has four  
+
+## Bullets  
+* Bullets work just as they did in a normal R Markdown document  
+  + Sub-bullets do too  
+1. Ordinal lists  
+3. Also work as they previously did  
+2. Even correcting out of ordered listings  
+
+## Formatting Options (1.4)  
+Plain text  
+
+*Italicized text*  
+
+**Bold text**  
+
+`print("Denoting code")`  
+
+## Showing Code (1.5)  
+* Just results  
+```{r}
+summary(mtcars$mpg)
+```
+
+* With code (`echo = TRUE`)  
+```{r echo = TRUE}
+summary(mtcars$mpg)
+```
+
+
+
+## Showing Code (Con't)  
+* Removing comment characters (`comment = ""`)  
+```{r comment = ""}
+summary(mtcars$mpg)
+```
+
+* Setting `eval = FALSE` allows one to just show the code, no output  
+```{r eval = FALSE, echo = TRUE}
+summary(mtcars$mpg)
+```
+
+## Showing Plots  
+* Show a plot with default settings  
+```{r}
+plot(mtcars$wt, mtcars$mpg, xlab = "Weight", ylab = "MPG")
+```
+
+## Figure Options  
+* Adjust: 
+  + Alignment with `fig.align`  
+  + Caption with `fig.cap`  
+  + Size with `fig.height` & `fig.width`  
+  
+```{r, fig.align = "center", fig.cap = "My Plot of Weight vs. MPG", fig.height= 3, fig.width = 3*1.618033988749}
+plot(mtcars$wt, mtcars$mpg, xlab = "Weight", ylab = "MPG")
+```
+
