@@ -650,7 +650,7 @@ If one has the github link of: *https://github.com/seankross/slides/blob/gh-page
 ### Overview (1.1)  
 * Leaflet is a JavaScript library with an associated package for R to make use of it in creating interactive maps within one's R environment.  
 * In RStudio it will bring up the output in the RStudio window.  
-* This allows one to create leaflet maps without any knowledge of Javascript  
+* This allows one to create leaflet maps without any knowledge of Javascript  * **[This site](https://www.gps-coordinates.net/)** provides an easy interface for retrieving coordinates
 
 #### Example  
 * The `leaflet()` function creates a map widget that one can store in a variable so that the map can be modified later on.  
@@ -825,25 +825,53 @@ df %>% leaflet() %>% addTiles() %>%
 ```
 
 
-**Reminder to Commit (07), Delete this line** ***AFTER*** **Committing**  
 
 ## Quiz 2  
-1. 
+1. What is rmarkdown?  
+* A format that can be interpreted into markdown (whcih is a simplified markup language).  
+* A simplified format that, when interpreted, incorporates your R analysis into your document.  
 
 
-2. 
+2. In rmarkdown presentations, in the options for code chunks, what command prevents the code from being repeated before results in the final interpreted document?  
+* `echo = FALSE`
 
 
-3. 
+3. In rmarkdown presentations, in the options for code chunks, what prevents the code from being interpreted?  
+* `eval = FALSE`
 
 
-4. 
+4. What is leaflet?  
+* An R package interface to the javascript library of the same name  
+* A javascript library for creating interactive maps  
 
 
 5. 
+```{r eval = FALSE, echo = TRUE, message = FALSE}
+library(leaflet)
+set.seed(31129)
+df <- data.frame(lat = runif(500, min = 37.6, max = 37.9),
+                 lng = runif(500, min = -122.48, max = -122.16))
+```
+
+The R command:  
+```{r eval = FALSE, echo = TRUE, message = FALSE}
+df %>% leaflet() %>% addTiles()
+```
+is equivalent to what?  
+
+* This
+```{r eval = FALSE, echo = TRUE, message = FALSE}
+addTiles(leaflet(df))
+```
+* or  
+```{r eval = FALSE, echo = TRUE, message = FALSE}
+leaflet(df) %>% addTiles()
+```
 
 
-6. 
+
+6. If I want to add popup icons to my leaflet map in R, I should use.  
+* `addMarkers`
 
 
 **Reminder to Commit (Q2), Delete this line** ***AFTER*** **Committing**  
