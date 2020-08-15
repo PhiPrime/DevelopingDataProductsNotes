@@ -880,24 +880,263 @@ leaflet(df) %>% addTiles()
 * **[The GitHub Pages for my project can be found here.](https://phiprime.github.io/MeteoriteLandings/index.html)**  
 
 
-**Reminder to Commit (P1), Delete this line** ***AFTER*** **Committing**  
-
 # Building R Packages  
 
 ## R Packages  
 
-### R Packages Overview  
+### R Packages Overview (1.1)  
+* A great way to distribute your approaches to other people that use R. 
+* **[Hilary Parker's blog post on writing a package from scratch](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)**  
 
+#### What is an R Package?  
+* A mechanism for extending the basic functionality of R  
+* A collection of R functions, or other (data) objects  
+* Organized in a systematic fashion to provide a minimal amount of consistency  
+* Written by users/developers  
+* Contains some kind of documentation for each package accessible through the help panel  
+  
+#### Where to find R Packages  
+* Primarily available from CRAN and Bioconductor  
+* Also available from GitHub, Bitbucket, Gitorious, etc.  
+* Packages from CRAN/Bioconductor can be installed with `install.packages()`  
+* Packages from GitHub can be installed using `install_github()` from the **[devtools](https://www.r-project.org/nosvn/pandoc/devtools.html)** package  
+  + Similar functions, `install_...()`, exist for the other central repositories.  
+* A package doesn't have to be on a central repository, but doing so makes it easier for others to install the package  
+  
+#### Why make an R Package?  
+* As opposed to just making some code available?  
+* Packages are a structured format that others can understand since they have used other packages  
+* Documentation is required: Functions are explained along with arguments & return values  
+* The package creator can specify what functions the users should be calling, as opposed to those that are within the package for computations  
+  + Helpful if the hidden packages need edited later, edits can be done without ruining the interface available to the public/other users.  
+* Easier to maintain, if one doesn't want to maintain it anymore the structure is already there for another to take on maintaining.  
+* If a package is on CRAN it has pasted some standards, and will be reliable (or reported to be retired if it becomes out of date).  
+  
+#### Package Development Process  
+* Write some code in an R script file, `.R`  
+* Desire to make code available to others (or just more accessible for yourself)  
+* Incorporate R script file into R package structure  
+* Write documentation for user functions  
+* Include some other material (examples, demos, data sets, tutorials)  
+* Package it up!  
 
-### R Packages (1.1)  
+At this point one could stop and keep the package on their system, or email to a friend or two. However one could make it available to the public  
+
+* Submit package to CRAN or Bioconductor  
+* Push source code repository to GitHub or other source code sharing web site  
+* People find all kinds of problems with your code  
+  + Scenario 1: They tell you about those problems and expect you to fix it  
+  + Scenario 2: They fix the problem for you and show you the changes  
+* You incorporate the changes and release a new version  
 
 
 ### R Packages (1.2)  
+#### R Package Essentials  
+* An R package is started by creating a directory 
+  + Typically with the same name as the R package  
+* A DESCRIPTION file which has info about the package  
+* R code (in the `R/` sub-directory)  
+* Documentation (in the `man/` sub-directory)  
+* NAMESPACE (optional, but should be done)  
+* Full requirements in **[Writing R Extensions documentation](https://cran.r-project.org/doc/manuals/R-exts.html)**   
+
+#### The DESCRIPTION File  
+* **Package**: Name of package (what the argument should be for `library(package_name)`)  
+* **Title**: Full name of package  
+* **Description**: Longer description of package in (typically) one sentence  
+* **Version**: Version number (usually [Major_Number].[minor_number]-[patch_level] format)  
+* **Author, Authors@R**: Name of the original author(s)  
+* **Maintainer**: Name & email of person who fixes problems  
+* **License**: License for the source code  
+
+The following fields are optional but commonly used  
+* **Depends**: R packages that your package depends on  
+* **Suggests**: Optional R packages that users may want to have installed, but aren't essential  
+* **Date**: Release date in YYYY-MM-DD format  
+* **URL**: Package home page (such as a link for the repo)  
+* Other fields can be added for your benefit but will generally be ignored by R  
+
+##### Example DESCRIPTION File: `gpclib`  
+```
+Package: gpclib  
+Title: General Polygon Clipping Library for R  
+Description: General polygon clipping routines for R based on Alan Murta's C library  
+Version: 1.5-5  
+Author: Roger D. Peng rpeng@jhsph.edu with contributions form Duncan Murdoch and Barry Rowlingson; GPC library by Alan Murta  
+Maintainer: Roger D. Peng rpeng@jhsph.edu  
+License: file LICENSE  
+Depends: R(>=2.14.0), methods  
+Imports: graphics  
+Date: 2013-04-01  
+URL: http://www.cs.man.ac.uk/~toby/gpc/, http://github.com/rdpeng/gpclib  
+```
+* Depends states the minimal version of `R` requried along with another package, `methods`.  
+
+#### R Code  
+* Copy R code into the `R/` sub-directory  
+* There can be any number fo fields in this directory  
+* Usually separate out files into logical groups  
+* Code for all functions should be included here and not anywhere else in the package  
+
+#### The NAMESPACE File  
+* Used to indicate which functions are **exported**  
+* Exported functions can be called by the user and are considered the public API (Application Programming Interface)  
+* Non-exported functions cannot be called directly by the user (but the code can still be viewed)  
+* Hides implementation details from users and amkes a cleaner package interface  
+* You can also indicate what functions you **import** from other packages  
+* This allows for your package to use other packages without making other packages visible to the user  
+* Importing a function loads the package but does not attach it to the search list  
+
+Key directives  
+* `export("<function>")`  
+* `import("<package>")`  
+* `importFrom("<package>", "<function>")`  
+
+Also important  
+* `exportClasses("<class>")`  
+* `exportMethods("<generic>")`  
+
+##### Example NAMESPACE Files  
+* `mvtsplot` package  
+```
+export("mvtsplot")
+importFrom(graphics, "Axis")
+import(splines)
+```
+  
+* `gpclib` package  
+```
+export("read.polyfile", "write.polyfile")
+
+importFrom(graphics, plot)
+
+exportClasses("gpc.poly", "gpc.poly.nohole")
+
+exportMethods("show", "get.bbox", "plot", "intersect", "union", "setdiff",
+              "[", "append.poly", "scale.poly", "area.poly", "get.pts",
+              "coerce", "tristrip", "triangulate")
+```
+  + The methods apply to the classes that were defined  
+  
+#### Documentaion  
+* Documentation files (`.Rd`) placed in `man/` sub-directory  
+  + Important because this tells the users how to use your package  
+* Written in a specific markup language  
+* Required for every exported function  
+  + Another reason to limit exported functions  
+* You can document other things like concepts, package overview, data sets, etc.  
+
+##### Help File Example: `line` Function  
+* The following is the code used to generate the help page seen if one were to pull up the help page by executing `?line`  
+```
+\name{line}
+\alias{line}
+\alias{residuals.tukeyline}
+\title{Robust Line Fitting}
+\description{
+  Fit a line robustly as recommended in \emph{Exploratory Data Analysis}.
+}
+\usage{
+line(x, y)
+}
+\arguments{
+  \item{x, y}{the arguments can be any way of specifying x-y pairs. See
+    \code{\link{xy.coords}}.}
+}
+\details{
+  Cases with missing values are omitted.  
+  
+  Long vectors are not supported.
+}
+\value{
+  An object of class \code{"tukeyline"}.
+  
+  Methods are available for the generic functions \code{coef},
+  \code{residuals}, \code{fitted}, and \code{print}.
+}
+\references{
+  Tukey, J. W. (1977).
+  \emph{Exploratory Data Analysis},
+  Reading Massachusetts: Addison-Wesley.
+}
+```
+
+#### Building and Checking  
+* R CMD build is a command-line program that creates a package archive file (`.tar.gz`)  
+* R CMD check runs a battery of tests on the package. Check that:  
+  + documentation exists  
+  + code can be loaded, no major coding problems or errors  
+  + Examples in documentation can execute  
+  + Checks that documentation's arguments match those in the code.  
+  + All tests must pass to put package on CRAN  
+* One can run R CMD build or R CMD check from the command-line using a terminal or command-shell application  
+* Once can also run them from R using the `system()` function:  
+```{r echo = TRUE, eval = FALSE}
+system("R CMD build newpackage")
+system("R CMD check newpackage")
+```
+
+#### Getting Started  
+* The `package.skeleton()` function in the `utils` package creates a "skeleton" R package  
+* Directory structure (`R/`, `man/`), DESCRIPTION file, NAMESPACE file, documentation files  
+* If there are functions visible in your workspace, it writes R code fiels to teh `R/` directory  
+* Documentations tubs are created in `man/`  
+* You need to fill in the rest  
+
+#### Summary  
+* R packages provide a systematic way to make R code available to others  
+* Standards ensure that packages have a minimal amount of documentation and robustness  
+* Obtained from CRAN, Bioconductor, Github, etc.  
+  
+Basic Checklist:  
+* Create a new directory with `R/` and `man/` sub-directories (or just use `package.skeleton()`)  
+* Write a DESCRIPTION file  
+* Copy R code into the `R/` sub-directory  
+* Write documentation files in `man/` sub-directory  
+* Write a NAMESPACE file with exports/imports  
+* Build and check  
+
+
+
+
 
 
 ### Building R Packages Demo  
+* This package will contain two functions to build a prediction model for a high dimensional data set, using only the top ten predictors.  
+  + **[Some background on the rationale for this kind of approach](https://simplystatistics.org/2012/02/23/prediction-the-lasso-vs-just-using-the-top-10/)**  
+* This demo is in this located in `./topten/`  
 
+#### Start up  
+* In RStudio `File -> New Project... -> New Directory -> R Package`  
+  + Enter `Package name:`  
+  + Select where the directory should be in your files  
+  + A light skeleton of the required files is created  
 
+#### Documentation With Roxygen2  
+* Has to be installed with `install.packages("roxygen2")`  
+* "Generate documentation with Roxygen" has to be checked in the "Build Tools" pane of "Project Options"  
+  + Also may want to check to run it when you "Install and Restart"  
+* The Roxygen2 package allows the developed to put on the documentation in the code file itself  
+  + This can help documentation not get outdated since if one edits the code the documentation is in the same file to also be edited  
+* A single quote is used as a token after a comment character to denote which comments are to be used in the documentation (`#'`)  
+* Details are denoted with an at sign then the detail it refers to:  
+  + `#' @param X` where X is the parameter being described  
+  + `#' @return description of value returned`  
+  + `#' @author ...`  
+  + etc.  
+
+##### Building Documentation Files  
+* Select **Build** tab  
+  + This tab only exists if you're working on a project designated as an R Package  
+* Select **Install and Restart** to restart the R session and load the package.  
+  + If the option to run roxygen when Install and Restart is selected the `.Rd` files will be updated on this command  
+* The documentation for the package can be viewed by executing `library(help = package_name)` 
+  + `?function_name` will pull up the help page for a particular function  
+
+#### Running Check  
+* In the "Build" tab select "Check" to run the check  
+* The results of the check will be displayed along with any warning flags, which indicate what needs corrected to pass the check  
+* All tests have to pass to be able to upload to CRAN  
 
 **Reminder to Commit (08), Delete this line** ***AFTER*** **Committing**  
 
