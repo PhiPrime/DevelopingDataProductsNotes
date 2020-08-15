@@ -874,11 +874,10 @@ leaflet(df) %>% addTiles()
 * `addMarkers`
 
 
-**Reminder to Commit (Q2), Delete this line** ***AFTER*** **Committing**  
-
 
 ## Course Project 1  
-
+* **[The GitHub repository for my project can be found here.](https://github.com/PhiPrime/MeteoriteLandings)**  
+* **[The GitHub Pages for my project can be found here.](https://phiprime.github.io/MeteoriteLandings/index.html)**  
 
 
 **Reminder to Commit (P1), Delete this line** ***AFTER*** **Committing**  
