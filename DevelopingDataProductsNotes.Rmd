@@ -1138,14 +1138,261 @@ Basic Checklist:
 * The results of the check will be displayed along with any warning flags, which indicate what needs corrected to pass the check  
 * All tests have to pass to be able to upload to CRAN  
 
-**Reminder to Commit (08), Delete this line** ***AFTER*** **Committing**  
 
 ## R Classes and Methods  
-### R Classes and Methods (1.1)  
+### Overview (1.1)  
+* Classes & methods are a system for doing object oriented programming (OOP)  
+* R was originally quite interesting because it is both interactive and has a system for OOP.  
+  + Other languages which support OOP (C++, Java, Lisp, Python, Perl) generally are not interactive languages (Programs and written then complied and ran, whereas R uses the command line interface)  
+* In R much fo the code for supporting classes/methods is written by John Chambers (the creator of the original S language) and documented in the book **[Programming with Data: A Guide to the S Language](https://www.amazon.com/Programming-Data-Language-Lecture-Economics/dp/0387985034)**  
+* A natural extension of Chambers' idea of allowing someone to cross over from being the user to being the programmer.  
+* OOP is bit different in R than it is in most languages  
 
+#### Two Styles of Classes and Methods  
+* S3 classes/methods (Older style)  
+  + Included with version 3 of the S language  
+  + Informal, a little "kludgy", meaning that some elements that are used were originally intended for other applications  
+* S4 classes/methods (New style)  
+  + More formal and rigorous  
+  + Included with S-PLUS 6 and R 1.4.0 (Dec. 2001)  
+* For now (and the foreseeable future), S3 classes/methods and S4 classes/methods are separate systems (but they can be mixed to some degree).  
+* Each system can be used fairly independently of the other.  
+* Developers of new projects are encouraged to use the S4 style.  
+  + Used extensively in the Bioconductor projects  
+  + However, many developers still use S3 classes/methods because they are "quick and dirty".  
+* These notes will focus primarily on S4 classes/methods  
+* The code for implementing S4 classes/methods in R is in the `methods` package, which is usually loaded by default  
 
-### R Classes and Methods (1.2)  
+#### Object Oriented Programming in R  
+* A class is a description of a thing (such as a data type). A class can be defined using `setClass()` in the `methods` package.  
+* An object is an instance of a class. Objects can be created using `new()`, although other types of functions exist.  
+* A method is a function that only operates on a certain class of objects.  
+* A generic function is an R function which dispatches methods. A generic function typically encapsulates a "generic" concept (e.g. `plot`, `mean`, `predict`, ...)  
+  + The generic function does not actually do any computation.  
+  + How one makes a `plot` depends on the data type, so calling `plot` will look at the data type then use the appropriate method.  
+* A method is the implementation fo a generic function for an object of a particular class.  
 
+#### Things to Look Up for Help  
+* The help files for the `methods` package are extensive - do read them as they are the primary documentation  
+* You may want to start with `?Classes` and `?Methods`  
+* Check out `?setClass`, `?setMethod`, and `?setGeneric`  
+* Some of it gets technical, but try your best for now - it will make sense in the future as you keep using it.  
+* Most of the documentation in the methods package is oriented towards developers/programmers as these are the primary people using classes/methods  
+
+#### Classes  
+* All objects in R have a class which can be determined by the `class` function  
+```{r}
+set.seed(1)
+objs <- list(1, TRUE, rnorm(100), NA, NA_character_, "foo")
+data.frame(object = c("1", "TRUE", "rnorm(100)", "NA", 
+                      "NA_character_", "foo"), 
+           class = sapply(objs, class))
+```
+* Data classes go beyond the atomic classes  
+```{r}
+set.seed(1618)
+x <- rnorm(100)
+y <- x + rnorm(100)
+fit <- lm(y ~ x) #linear regression model
+class(fit)
+```
+  + A linear model is it's own data type, `lm`, and it has it's own attributes that are returned from certain functions, such as `coef`, `summary`, etc.  
+  
+#### Generics/Methods in R  
+* S4 and S3 style generic functions look different but conceptually, theya re the same (they play the same role).  
+* When programming one can write new methods for an existing generic *or* create their own generics and associated methods.  
+* If a data type does not exist in R that matches the programmer's needs, they can always define a new class along with generics/methods that go with it.  
+
+#### Viewing S3 generic functions  
+* In the `base` package the `mean` and `print` functions are generic  
+```{r}
+mean
+print
+```
+
+* The methods available for a generic function are returned by the `methods("fn_name")`  function  
+```{r}
+methods("mean")
+```
+  + The methods available can grow as one loads more packages  
+  
+#### Viewing S4 generic functions  
+* The `show` function is from the `methods` package and is the S4 equivalent of `print`  
+  + The `show` function is usually not called directly (much like `print`) because objects are auto-printed.  
+```{r}
+show
+```
+
+* To view methods available for an S4 function are called to with `showMethods`  
+```{r}
+showMethods("show")
+```
+  + Trying to call an S3 function with `showMethods` will return an error message  
+```{r}
+showMethods("mean")
+```
+  + However using `methods` does still yield a result for S4 functions 
+```{r}
+methods("show")
+```
+  
+#### Generic/Method Mechanism  
+* The first argument of a generic function is an object of a particular class (there may be other arguments)  
+* The processes for computing is as follows:  
+1. The generic function checks the class of the object.  
+2. A search is done to see if there is an appropriate method for that class.  
+3. If there exists a method for that class, then that method is called on the object and we're done.  
+4. If a method for that class does not exist, a search is done to see if there is a default method for the generic. If a default exists, then the default method is called.  
+5. If a default method does not exist, then an error is thrown.  
+
+#### Examining Code for Methods  
+* The code for a method can't just be printed like other functions because the code is usually hidden.  
+* To see the code for an S3 method, one can use the function `getS3method`.  
+  + The call is `getS3method(<generic>, <class>)`  
+* For S4 method once can use the function `getMethod`  
+  + The call is `getMethod(<generic>, <signature>)` (more details on signature are noted later).  
+  
+
+### Examples (1.2)  
+#### S3 Class/Method: Example 1  
+What's happening in the following code?  
+```{r}
+set.seed(2)
+x <- rnorm(100)
+mean(x)
+```
+1. The class of x is "numeric"  
+2. There is no mean method for "numeric" objects  
+3. So we call the default function for `mean`.  
+
+* Looking at the method  
+```{r}
+head(getS3method("mean", "default"), 24)
+```
+  
+* First a check is made if `x`'s class is not `numeic`, `complex`, or `logical`. If it is none of these a warning is thrown and `NA_real_` is returned  
+* If the logical argument `na.rm` is TRUE it will remove the `NA` values  
+* If the `trim` argument has a value other than the default the next two top logicals handle checking that it's used correctly. And redefine the object's values accordingly  
+* At the bottom (Line 23) it calls internal C code to calculate the mean efficiently (`.Internal(mean(x))`)  
+
+#### S3 Class/Method: Example 2  
+What happens in the following code  
+```{r}
+set.seed(3)  
+df <- data.frame(x = rnorm(100), y = 1:100)
+sapply(df, mean)
+```
+1. The class of `df` is "data.frame"; each column can be an object of a different class  
+2. We `sapply` over the columns and call the `mean` function for each  
+3. In each column, `mean` checks the class of the object and dispatches the appropriate method.  
+4. We have a `numeric` column and an `integer` column; `mean` calls the default method for both  
+
+#### Calling Methods Directly  
+* Some S3 methods are visible to the user (i.e. `mean.default`)  
+* **Never** call methods directly  
+* Use the generic function and let the method be dispatched automatically.  
+  + Results in cleaning & more robust code (in case underlying method changes)  
+* With S4 methods you cannot call them directly at all  
+
+#### S3 Class/Method: Example 3  
+* The `plot` function is generic and its behavior depends on the object being plotted.  
+```{r}
+set.seed(10)
+x <- rnorm(100)
+plot(x)
+```
+* For time series objects, `plot` connects the dots.  
+  + `ts` objects have a specific method that's called, not just the default  
+
+```{r}
+set.seed(10)
+x <- rnorm(100)
+x <- as.ts(x) ## Convert to a time series object
+plot(x)
+```
+
+#### Write Your Own Methods  
+* If you write new methods for new classes, you'll probably end up writing methods for the following generics:  
+  + print/show  
+  + summary  
+  + plot  
+* There are two ways to extend the R system via classes/methods  
+  + Write a method for a new class but for an existing generic function (i.e. `print`)  
+  + Write new generic functions and new methods for those generics  
+  
+#### S4 CLasses  
+* Why would one want to create a new class?  
+  + To represent new types of data (e.g. gene expression, space-time, hierarchical, sparse matrices)  
+    - Note: "new" means they are new to R, not the statistical community  
+  + new concepts/ideas that haven't been thought of yet (e.g. a fitted point process model, mixed effects model, a sparse matrix)  
+  + To abstract/hide implementation details from the user  
+  
+#### S4 Class/Method: Creating a New Class  
+A new class can be defined using the `setClass` function  
+* At a minimum you need to specify the name of the class  
+* Data elements can also be specified, these are called slots  
+  + A class is like a list with predefined classes for each element  
+* Methods are defined with the `setMethod` function  
+* Information about a class definition can be obtained with the `showClass` function  
+  
+#### S4 Class/Method Example 1  
+Creating new classes/methods is something one likely wants to save the code for in a separate file  
+```{r}
+library(methods)
+setClass("polygon",
+         representation(x = "numeric",
+                        y = "numeric"))
+```
+* The slots for this class are `x` and `y`  
+  + The slots for an S4 object can be accessed with the `@` operator  
+
+* A `plot` method can be created with the `setMethod` function  
+  + For `setMethod` a generic function (`plot`) and signature need to be specified  
+  + A signature is a character vector indicating the classes of objects that are accepted by the method  
+  + In this case, the `plot` method will take one type fo object, a `polygon` object.  
+  
+Creating a `plot` method with `setMethod`  
+```{r}
+setMethod("plot", #Generic function
+          "polygon", #Signature
+          #Function takes an x & y argument, y is missing
+          function(x, y, ...) { 
+            #Calls plot again and plots numerics with default plot method
+            plot(x@x, x@y, type = "n", ...) 
+            xp <- c(x@x, x@x[1])
+            yp <- c(x@y, x@y[1])
+            #Uses lines function to connect the dots of xp & yp
+            lines(xp, yp)
+          })
+```
+
+* Notice that the slots of the polygon (the x- and y-coordinates) are accessed with the `@` operator.  
+
+* After calling `setMethod` the new `plot` method will be added to the list of methods for `plot`.  
+```{r}
+showMethods("plot")
+```
+  + Notice that the signature for class `polygon` is listed. The method for `ANY` is the default method and it is what is called when no other signature matches  
+  
+* Using new method:  
+```{r}
+p <- new("polygon", x = c(1, 2, 3, 4), y = c(1, 2.5, 3, 1))
+plot(p)
+```
+
+#### Summary  
+* Developing classes and associated methods is a powerful way to extend the functionality of R  
+* **Classes** define new data types  
+* **Methods** extend **generic fucntions** to specify the behavior fo generic functions on new classes  
+* As new data types and concepts are created, classes/methods provide a way to develop an intuitive interface to those data/concepts for users  
+
+#### Other Resources  
+* The best way to learn this material is to look at examples  
+  + There are quite a few examples on CRAN which use S4 classes/methods.  
+    - You can usually tell fi they use S4 classes/methods if the **methods** package is listen in the `Depends:` field  
+  + **[Bioconductor](http://www.bioconductor.org)** - a rich resource, even if you know nothing about bioinformatics  
+  + Some packages on CRAN to view: SparseM, gpclib, flexmix, its, lme4, orientlib, filehash  
+  + The `stats4` package (comes with R) has a bunch of classes/methods for doing maximum likelihood analysis.  
 
 **Reminder to Commit (09), Delete this line** ***AFTER*** **Committing**  
 
