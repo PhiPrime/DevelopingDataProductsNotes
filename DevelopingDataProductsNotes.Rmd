@@ -1394,19 +1394,43 @@ plot(p)
   + Some packages on CRAN to view: SparseM, gpclib, flexmix, its, lme4, orientlib, filehash  
   + The `stats4` package (comes with R) has a bunch of classes/methods for doing maximum likelihood analysis.  
 
-**Reminder to Commit (09), Delete this line** ***AFTER*** **Committing**  
 
 ## Quiz 3  
-1. 
+1. Which of the following items is required for an R package to pass R CMD check without any warnings or errors?  
+* An explicit software license  
+
+2. Which of the following is a generic function in a fresh installation of R, with only the default packages loaded?  
+```{r}
+methods("lm")
+methods("colSums")
+methods("show")
+methods("dgamma")
+methods("mean")
+methods("predict")
+```
 
 
-2. 
+
+3. What function is used to obtain the function body for an S4 method function?  
+```{r}
+getMethod("show")
+```
 
 
-3. 
 
+4. View the R Package within `./DDPQuiz3/`. Examine the `createmean` function implemented in the `R/` sub-directory. What is the appropriate text to place above the `createmean` function for Roxygen2 to create a complete help file?  
 
-4. 
+```{r echo = TRUE, eval = FALSE}
+#' This function calculates the mean
+#' 
+#' @param x is a numeric vector
+#' @return the mean of x
+#' @export
+#' @examples 
+#' x <- 1:10
+#' createmean(x)
+```
+
 
 
 
