@@ -1,0 +1,24 @@
+- Class: meta
+  Course: My_First_Course
+  Lesson: Lesson 2
+  Author: PhiPrime
+  Type: Standard
+  Organization: Wil' West
+  Version: 2.4.5
+
+- Class: mult_question
+  Output: What is good to add to a soup?
+  AnswerChoices: Vaseline;Blue Monday, the record;Noodles
+  CorrectAnswer: Noodles
+  AnswerTests: omnitest(correctVal= 'Noodles')
+  Hint: Vaseline is like a lotion. Records are essentially plastic. People can eat noodles.
+
+- Class: figure
+  Output: This is a simple graph
+  Figure: figuresourcefile.R
+  FigureType: new
+
+- Class: figure
+  Output: I added a line to the graph
+  Figure: addline.R
+  FigureType: add

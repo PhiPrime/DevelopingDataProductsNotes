@@ -1,0 +1,22 @@
+- Class: meta
+  Course: My First Course
+  Lesson: Lesson 1
+  Author: PhiPrime
+  Type: Standard
+  Organization: Wil' West
+  Version: 2.4.5
+
+- Class: text
+  Output: Welcome to my first lesson
+
+- Class: cmd_question
+  Output: What is the value of 2 + 2?
+  CorrectAnswer: 4
+  AnswerTests: omnitest(correctVal=4)
+  Hint: Enter the value that is two more than two or an expression that will solve it.
+
+- Class: cmd_question
+  Output: Add 2 and 2 using the plus operator.
+  CorrectAnswer: 2 + 2
+  AnswerTests: omnitest(correctExpr='2+2')
+  Hint: Type 2 + 2 to use R to evaluate the expression.
