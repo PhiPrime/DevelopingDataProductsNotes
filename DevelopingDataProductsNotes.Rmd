@@ -1434,11 +1434,10 @@ getMethod("show")
 
 
 
-**Reminder to Commit (Q3), Delete this line** ***AFTER*** **Committing**  
-
 
 ## Course Project 2  
-
+* My project is in **[a presentation of GitHub Pages](https://phiprime.github.io/plotlyPresentation/index.html#1)**.  
+* The code can **[be found on GitHub](https://github.com/PhiPrime/plotlyPresentation)**.  
 
 **Reminder to Commit (P2), Delete this line** ***AFTER*** **Committing**  
 
