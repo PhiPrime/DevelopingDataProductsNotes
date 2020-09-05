@@ -1499,12 +1499,13 @@ new_lesson("Lesson 2", "My_First_Course")
   + `wq_multiple` - for multiple choice questions  
   + `wq_figure` - displays a figure that is created from a script in the directory. `FigureType` indicates if the code should build on an existing figure or make a new one (either `add` or `new`).  
 
-**Reminder to Commit (10), Delete this line** ***AFTER*** **Committing**  
 
 ## Course Project 3  
 
-
-**Reminder to Commit (P3), Delete this line** ***BEFORE*** **Committing**  
+* [The Shiny app can be found here.](https://phiprime.shinyapps.io/Sales/)  
+* [The Reproducible Pitch can be found here.](https://phiprime.github.io/firstShinyApp/index.html)  
+* [The repository containing the code for the Shiny app can be found on my GitHub.](https://github.com/PhiPrime/firstShinyApp)  
+ 
 
 
 
